@@ -13,6 +13,8 @@ from app.infrastructure.database import init_db, close_db
 from app.infrastructure.redis import init_redis_services, close_redis_services
 from app.api.v1.auth.routes import router as auth_router
 from app.api.v1.patients.routes import router as patients_router
+from app.api.v1.appointments.routes import router as appointments_router
+from app.api.v1.emr.routes import router as emr_router
 from app.workers.celery_app import celery_app
 
 # Configure logging
@@ -110,6 +112,18 @@ app.include_router(
     patients_router,
     prefix="/api/v1",
     tags=["Patients"]
+)
+
+app.include_router(
+    appointments_router,
+    prefix="/api/v1/appointments",
+    tags=["Appointments"]
+)
+
+app.include_router(
+    emr_router,
+    prefix="/api/v1/emr",
+    tags=["EMR"]
 )
 
 

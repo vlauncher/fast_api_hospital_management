@@ -23,6 +23,59 @@ class Permissions:
     PATIENTS_UPDATE = "patients:update"
     PATIENTS_DELETE = "patients:delete"
     
+    # Appointments
+    APPOINTMENTS_CREATE = "appointments:create"
+    APPOINTMENTS_READ = "appointments:read"
+    APPOINTMENTS_READ_OWN = "appointments:read:own"
+    APPOINTMENTS_UPDATE = "appointments:update"
+    APPOINTMENTS_DELETE = "appointments:delete"
+    
+    # EMR (Electronic Medical Records)
+    EMR_CREATE = "emr:create"
+    EMR_READ = "emr:read"
+    EMR_UPDATE = "emr:update"
+    EMR_SIGN = "emr:sign"
+    EMR_UPDATE_VITALS = "emr:update_vitals"
+    
+    # Diagnoses
+    DIAGNOSES_CREATE = "diagnoses:create"
+    DIAGNOSES_READ = "diagnoses:read"
+    DIAGNOSES_UPDATE = "diagnoses:update"
+    DIAGNOSES_DELETE = "diagnoses:delete"
+    
+    # Procedures
+    PROCEDURES_CREATE = "procedures:create"
+    PROCEDURES_READ = "procedures:read"
+    PROCEDURES_UPDATE = "procedures:update"
+    
+    # Clinical Notes
+    CLINICAL_NOTES_CREATE = "clinical_notes:create"
+    CLINICAL_NOTES_READ = "clinical_notes:read"
+    CLINICAL_NOTES_UPDATE = "clinical_notes:update"
+    CLINICAL_NOTES_SIGN = "clinical_notes:sign"
+    
+    # Prescriptions
+    PRESCRIPTIONS_CREATE = "prescriptions:create"
+    PRESCRIPTIONS_READ = "prescriptions:read"
+    PRESCRIPTIONS_UPDATE = "prescriptions:update"
+    PRESCRIPTIONS_VERIFY = "prescriptions:verify"
+    
+    # Queue Management
+    QUEUE_MANAGE = "queue:manage"
+    QUEUE_READ = "queue:read"
+    
+    # Schedules
+    SCHEDULES_CREATE = "schedules:create"
+    SCHEDULES_READ = "schedules:read"
+    SCHEDULES_UPDATE = "schedules:update"
+    SCHEDULES_DELETE = "schedules:delete"
+    
+    # Leaves
+    LEAVES_CREATE = "leaves:create"
+    LEAVES_READ = "leaves:read"
+    LEAVES_APPROVE = "leaves:approve"
+    LEAVES_CANCEL = "leaves:cancel"
+    
     # System
     AUDIT_READ = "audit:read"
     SYSTEM_ADMIN = "system:admin"

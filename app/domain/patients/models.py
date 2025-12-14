@@ -101,6 +101,10 @@ class Patient(Base):
     insurance_records = relationship("Insurance", back_populates="patient", cascade="all, delete-orphan")
     visits = relationship("PatientVisit", back_populates="patient", cascade="all, delete-orphan")
     
+    # Phase 2 relationships
+    appointments = relationship("Appointment", back_populates="patient")
+    encounters = relationship("Encounter", back_populates="patient")
+    
     def encrypt_sensitive_data(self):
         """Encrypt sensitive PII fields"""
         sensitive_fields = [

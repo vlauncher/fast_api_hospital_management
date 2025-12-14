@@ -13,12 +13,20 @@ sys.path.insert(0, str(project_root))
 # Import models and configuration
 from app.core.config import settings
 from app.infrastructure.database import Base
-from app.domain.auth.models import User, Role, UserRole
+from app.domain.auth.models import User, UserRole
 from app.domain.patients.models import (
     Patient, EmergencyContact, Insurance, PatientVisit
 )
 from app.domain.audit.models import (
     AuditLog, SystemEvent, ComplianceReport, DataAccessLog, SecurityEvent
+)
+# Phase 2 models
+from app.domain.appointments.models import (
+    DoctorSchedule, DoctorLeave, Appointment, Queue
+)
+from app.domain.emr.models import (
+    Encounter, Diagnosis, Procedure, ClinicalNote, VitalSigns,
+    Prescription, PrescriptionItem
 )
 
 # this is the Alembic Config object, which provides

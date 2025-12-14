@@ -93,35 +93,73 @@ class User(Base):
                 Permissions.SYSTEM_ADMIN,
                 Permissions.USERS_CREATE, Permissions.USERS_READ, Permissions.USERS_UPDATE, Permissions.USERS_DELETE,
                 Permissions.PATIENTS_CREATE, Permissions.PATIENTS_READ, Permissions.PATIENTS_UPDATE, Permissions.PATIENTS_DELETE,
+                Permissions.APPOINTMENTS_CREATE, Permissions.APPOINTMENTS_READ, Permissions.APPOINTMENTS_UPDATE, Permissions.APPOINTMENTS_DELETE,
+                Permissions.EMR_CREATE, Permissions.EMR_READ, Permissions.EMR_UPDATE, Permissions.EMR_SIGN,
+                Permissions.PRESCRIPTIONS_CREATE, Permissions.PRESCRIPTIONS_READ, Permissions.PRESCRIPTIONS_UPDATE, Permissions.PRESCRIPTIONS_VERIFY,
+                Permissions.SCHEDULES_CREATE, Permissions.SCHEDULES_READ, Permissions.SCHEDULES_UPDATE, Permissions.SCHEDULES_DELETE,
+                Permissions.LEAVES_CREATE, Permissions.LEAVES_READ, Permissions.LEAVES_APPROVE,
+                Permissions.QUEUE_MANAGE, Permissions.QUEUE_READ,
                 Permissions.AUDIT_READ
             ],
             UserRole.ADMIN: [
                 Permissions.USERS_CREATE, Permissions.USERS_READ, Permissions.USERS_UPDATE,
                 Permissions.PATIENTS_CREATE, Permissions.PATIENTS_READ, Permissions.PATIENTS_UPDATE, Permissions.PATIENTS_DELETE,
+                Permissions.APPOINTMENTS_CREATE, Permissions.APPOINTMENTS_READ, Permissions.APPOINTMENTS_UPDATE,
+                Permissions.EMR_READ,
+                Permissions.PRESCRIPTIONS_READ,
+                Permissions.SCHEDULES_CREATE, Permissions.SCHEDULES_READ, Permissions.SCHEDULES_UPDATE,
+                Permissions.LEAVES_READ, Permissions.LEAVES_APPROVE,
+                Permissions.QUEUE_READ,
                 Permissions.AUDIT_READ
             ],
             UserRole.DOCTOR: [
                 Permissions.PATIENTS_READ, Permissions.PATIENTS_READ_DEPARTMENT,
-                Permissions.PATIENTS_UPDATE
+                Permissions.PATIENTS_UPDATE,
+                Permissions.APPOINTMENTS_READ_OWN, Permissions.APPOINTMENTS_UPDATE,
+                Permissions.EMR_CREATE, Permissions.EMR_READ, Permissions.EMR_UPDATE, Permissions.EMR_SIGN,
+                Permissions.DIAGNOSES_CREATE, Permissions.DIAGNOSES_READ, Permissions.DIAGNOSES_UPDATE,
+                Permissions.PROCEDURES_CREATE, Permissions.PROCEDURES_READ, Permissions.PROCEDURES_UPDATE,
+                Permissions.CLINICAL_NOTES_CREATE, Permissions.CLINICAL_NOTES_READ, Permissions.CLINICAL_NOTES_UPDATE, Permissions.CLINICAL_NOTES_SIGN,
+                Permissions.PRESCRIPTIONS_CREATE, Permissions.PRESCRIPTIONS_READ, Permissions.PRESCRIPTIONS_UPDATE,
+                Permissions.LEAVES_CREATE, Permissions.LEAVES_READ,
+                Permissions.QUEUE_MANAGE, Permissions.QUEUE_READ
             ],
             UserRole.NURSE: [
                 Permissions.PATIENTS_READ, Permissions.PATIENTS_READ_DEPARTMENT,
-                Permissions.PATIENTS_UPDATE
+                Permissions.PATIENTS_UPDATE,
+                Permissions.APPOINTMENTS_READ, Permissions.APPOINTMENTS_UPDATE,
+                Permissions.EMR_READ, Permissions.EMR_UPDATE_VITALS,
+                Permissions.PRESCRIPTIONS_READ,
+                Permissions.CLINICAL_NOTES_READ,
+                Permissions.QUEUE_MANAGE, Permissions.QUEUE_READ
             ],
             UserRole.RECEPTIONIST: [
-                Permissions.PATIENTS_CREATE, Permissions.PATIENTS_READ
+                Permissions.PATIENTS_CREATE, Permissions.PATIENTS_READ,
+                Permissions.APPOINTMENTS_CREATE, Permissions.APPOINTMENTS_READ, Permissions.APPOINTMENTS_UPDATE,
+                Permissions.SCHEDULES_READ,
+                Permissions.QUEUE_MANAGE, Permissions.QUEUE_READ
             ],
             UserRole.LAB_TECHNICIAN: [
-                Permissions.PATIENTS_READ, Permissions.PATIENTS_READ_DEPARTMENT
+                Permissions.PATIENTS_READ, Permissions.PATIENTS_READ_DEPARTMENT,
+                Permissions.EMR_READ,
+                Permissions.PRESCRIPTIONS_READ
             ],
             UserRole.PHARMACIST: [
-                Permissions.PATIENTS_READ, Permissions.PATIENTS_READ_DEPARTMENT
+                Permissions.PATIENTS_READ, Permissions.PATIENTS_READ_DEPARTMENT,
+                Permissions.PRESCRIPTIONS_READ, Permissions.PRESCRIPTIONS_VERIFY,
+                Permissions.EMR_READ
             ],
             UserRole.BILLING_STAFF: [
-                Permissions.PATIENTS_READ, Permissions.PATIENTS_READ_DEPARTMENT
+                Permissions.PATIENTS_READ, Permissions.PATIENTS_READ_DEPARTMENT,
+                Permissions.APPOINTMENTS_READ,
+                Permissions.EMR_READ,
+                Permissions.PRESCRIPTIONS_READ
             ],
             UserRole.MEDICAL_RECORDS_STAFF: [
-                Permissions.PATIENTS_READ, Permissions.PATIENTS_UPDATE
+                Permissions.PATIENTS_READ, Permissions.PATIENTS_UPDATE,
+                Permissions.EMR_READ,
+                Permissions.PRESCRIPTIONS_READ,
+                Permissions.CLINICAL_NOTES_READ
             ]
         }
         
