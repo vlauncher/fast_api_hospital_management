@@ -33,14 +33,6 @@ class AuthenticationService:
     
     async def register_user(self, user_data: UserCreate) -> User:
         """Register a new user"""
-        # Check if username already exists
-        existing_user = await self.user_repo.get_by_username(user_data.username)
-        if existing_user:
-            raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="Username already exists"
-            )
-        
         # Check if email already exists
         existing_email = await self.user_repo.get_by_email(user_data.email)
         if existing_email:
@@ -62,14 +54,14 @@ class AuthenticationService:
     
     async def authenticate_user(self, login_data: LoginRequest, ip_address: str = None, user_agent: str = None) -> TokenResponse:
         """Authenticate user and return tokens"""
-        # Find user by username
-        user = await self.user_repo.get_by_username(login_data.username)
+        # Find user by email
+        user = await self.user_repo.get_by_email(login_data.email)
         
         if not user:
-            # Increment failed attempts for non-existent username (optional)
+            # Increment failed attempts for non-existent user (optional)
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid username or password"
+                detail="Invalid email or password"
             )
         
         # Check if account is locked
@@ -101,7 +93,7 @@ class AuthenticationService:
             
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid username or password"
+                detail="Invalid email or password"
             )
         
         # Reset failed login attempts
@@ -112,7 +104,6 @@ class AuthenticationService:
         
         # Create tokens
         access_token = create_access_token(str(user.id), {
-            "username": user.username,
             "email": user.email,
             "role": user.role.value,
             "permissions": user.get_permissions(),
@@ -120,7 +111,7 @@ class AuthenticationService:
         })
         
         refresh_token = create_refresh_token(str(user.id), {
-            "username": user.username
+            "email": user.email
         })
         
         # Create session
@@ -162,7 +153,6 @@ class AuthenticationService:
         
         # Create new access token
         access_token = create_access_token(str(user.id), {
-            "username": user.username,
             "email": user.email,
             "role": user.role.value,
             "permissions": user.get_permissions(),

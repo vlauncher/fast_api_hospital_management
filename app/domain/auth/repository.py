@@ -40,20 +40,6 @@ class UserRepository:
         
         return user
     
-    async def get_by_username(self, username: str) -> Optional[User]:
-        """Get user by username"""
-        result = await self.db.execute(
-            select(User)
-            .options(selectinload(User.department))
-            .where(User.username == username)
-        )
-        user = result.scalar_one_or_none()
-        
-        if user:
-            user.decrypt_sensitive_data()
-        
-        return user
-    
     async def get_by_email(self, email: str) -> Optional[User]:
         """Get user by email"""
         result = await self.db.execute(
@@ -90,13 +76,8 @@ class UserRepository:
             query = query.where(User.is_active == is_active)
         
         if search:
-            # Search by username, email, or name (note: name fields are encrypted)
-            query = query.where(
-                or_(
-                    User.username.ilike(f"%{search}%"),
-                    User.email.ilike(f"%{search}%")
-                )
-            )
+            # Search by email or name (note: name fields are encrypted)
+            query = query.where(User.email.ilike(f"%{search}%"))
         
         query = query.offset(skip).limit(limit)
         
@@ -112,7 +93,7 @@ class UserRepository:
     async def update(self, user_id: uuid.UUID, update_data: dict) -> Optional[User]:
         """Update user information"""
         # Remove sensitive fields that should be encrypted separately
-        sensitive_fields = ['first_name', 'last_name', 'middle_name', 'phone']
+        sensitive_fields = ['first_name', 'last_name', 'phone']
         encrypted_data = {}
         
         for field in sensitive_fields:

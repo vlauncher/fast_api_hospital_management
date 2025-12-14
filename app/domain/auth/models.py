@@ -34,14 +34,12 @@ class User(Base):
     __tablename__ = "users"
     
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    username = Column(String(50), unique=True, nullable=False, index=True)
     email = Column(String(255), unique=True, nullable=False, index=True)
     password_hash = Column(String(255), nullable=False)
     
     # Profile information (encrypted)
     first_name = Column(String(100), nullable=False)  # Will be encrypted
     last_name = Column(String(100), nullable=False)   # Will be encrypted
-    middle_name = Column(String(100))                # Will be encrypted
     phone = Column(String(20))                       # Will be encrypted
     
     # Role and permissions
@@ -171,8 +169,6 @@ class User(Base):
             self.first_name = encrypt_data(self.first_name)
         if self.last_name:
             self.last_name = encrypt_data(self.last_name)
-        if self.middle_name:
-            self.middle_name = encrypt_data(self.middle_name)
         if self.phone:
             self.phone = encrypt_data(self.phone)
     
@@ -182,8 +178,6 @@ class User(Base):
             self.first_name = decrypt_data(self.first_name)
         if self.last_name:
             self.last_name = decrypt_data(self.last_name)
-        if self.middle_name:
-            self.middle_name = decrypt_data(self.middle_name)
         if self.phone:
             self.phone = decrypt_data(self.phone)
 

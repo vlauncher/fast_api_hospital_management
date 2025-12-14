@@ -171,7 +171,7 @@ class AuditMiddleware(BaseHTTPMiddleware):
             
             return {
                 "user_id": payload.get("sub"),
-                "username": payload.get("username"),
+                "email": payload.get("email"),
                 "role": payload.get("role"),
                 "permissions": payload.get("permissions", [])
             }
@@ -230,7 +230,7 @@ class AuditMiddleware(BaseHTTPMiddleware):
             if user_info:
                 audit_data.update({
                     "user_id": uuid.UUID(user_info["user_id"]) if user_info["user_id"] else None,
-                    "username": user_info["username"]
+                    "username": user_info["email"]
                 })
             
             # Log asynchronously (in production, this would be a background task)
@@ -270,7 +270,7 @@ class AuditMiddleware(BaseHTTPMiddleware):
             if user_info:
                 audit_data.update({
                     "user_id": uuid.UUID(user_info["user_id"]) if user_info["user_id"] else None,
-                    "username": user_info["username"]
+                    "username": user_info["email"]
                 })
             
             logger.info(
@@ -314,7 +314,7 @@ class AuditMiddleware(BaseHTTPMiddleware):
             if user_info:
                 audit_data.update({
                     "user_id": uuid.UUID(user_info["user_id"]) if user_info["user_id"] else None,
-                    "username": user_info["username"]
+                    "username": user_info["email"]
                 })
             
             logger.warning(
@@ -358,7 +358,7 @@ class AuditMiddleware(BaseHTTPMiddleware):
             if user_info:
                 audit_data.update({
                     "user_id": uuid.UUID(user_info["user_id"]) if user_info["user_id"] else None,
-                    "username": user_info["username"]
+                    "username": user_info["email"]
                 })
             
             # Log security events for authentication failures

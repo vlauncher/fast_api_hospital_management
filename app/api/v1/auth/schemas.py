@@ -7,11 +7,9 @@ from app.domain.auth.models import UserRole, UserStatus
 
 class BaseUserSchema(BaseModel):
     """Base schema for user data"""
-    username: str = Field(..., min_length=3, max_length=50)
     email: EmailStr
     first_name: str = Field(..., min_length=1, max_length=100)
     last_name: str = Field(..., min_length=1, max_length=100)
-    middle_name: Optional[str] = Field(None, max_length=100)
     phone: Optional[str] = Field(None, max_length=20)
     role: UserRole
     department_id: Optional[uuid.UUID] = None
@@ -45,7 +43,6 @@ class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
     first_name: Optional[str] = Field(None, min_length=1, max_length=100)
     last_name: Optional[str] = Field(None, min_length=1, max_length=100)
-    middle_name: Optional[str] = Field(None, max_length=100)
     phone: Optional[str] = Field(None, max_length=20)
     role: Optional[UserRole] = None
     department_id: Optional[uuid.UUID] = None
@@ -105,7 +102,7 @@ class DepartmentUpdate(BaseModel):
 
 class LoginRequest(BaseModel):
     """Schema for login request"""
-    username: str = Field(..., min_length=3)
+    email: EmailStr
     password: str = Field(..., min_length=1)
 
 

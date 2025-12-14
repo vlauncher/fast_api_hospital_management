@@ -90,7 +90,7 @@ class AuditLog(Base):
     def encrypt_sensitive_data(self):
         """Encrypt sensitive data in old_values and new_values"""
         sensitive_fields = [
-            'first_name', 'last_name', 'middle_name', 'date_of_birth',
+            'first_name', 'last_name', 'date_of_birth',
             'phone_primary', 'phone_secondary', 'email', 'address',
             'national_id', 'ssn', 'passport_number', 'driver_license',
             'medical_record_number', 'policy_holder_name', 'policy_holder_ssn'

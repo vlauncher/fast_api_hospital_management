@@ -1,5 +1,6 @@
 import pytest
 import asyncio
+import pytest_asyncio
 from typing import Generator, AsyncGenerator
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
@@ -10,7 +11,7 @@ from app.main import app
 from app.core.config import settings
 from app.infrastructure.database import get_db, Base
 from app.core.security import create_access_token, get_password_hash
-from app.domain.auth.models import User, Role
+from app.domain.auth.models import User, UserRole
 
 
 # Test database URL
@@ -29,15 +30,10 @@ TestSessionLocal = sessionmaker(
 )
 
 
-@pytest.fixture(scope="session")
-def event_loop() -> Generator:
-    """Create an instance of the default event loop for the test session."""
-    loop = asyncio.get_event_loop_policy().new_event_loop()
-    yield loop
-    loop.close()
 
 
-@pytest.fixture(scope="function")
+
+@pytest_asyncio.fixture(scope="function")
 async def db_session() -> AsyncGenerator[AsyncSession, None]:
     """Create a fresh database session for each test."""
     async with test_engine.begin() as conn:
@@ -53,7 +49,7 @@ async def db_session() -> AsyncGenerator[AsyncSession, None]:
         await conn.run_sync(Base.metadata.drop_all)
 
 
-@pytest.fixture(scope="function")
+@pytest_asyncio.fixture(scope="function")
 async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     """Create a test client with database dependency override."""
     
@@ -68,26 +64,18 @@ async def client(db_session: AsyncSession) -> AsyncGenerator[AsyncClient, None]:
     app.dependency_overrides.clear()
 
 
-@pytest.fixture(scope="function")
+@pytest_asyncio.fixture(scope="function")
 async def test_user(db_session: AsyncSession) -> User:
     """Create a test user for authentication tests."""
-    # Create test role
-    role = Role(
-        name="test_role",
-        description="Test role for testing",
-        permissions=["read:patients", "write:patients"]
-    )
-    db_session.add(role)
-    await db_session.commit()
-    await db_session.refresh(role)
     
     # Create test user
     user = User(
-        username="testuser",
         email="test@example.com",
         password_hash=get_password_hash("testpassword123"),
-        full_name="Test User",
-        phone_number="+1234567890",
+        first_name="Test",
+        last_name="User",
+        phone="+1234567890",
+        role=UserRole.DOCTOR,
         is_active=True,
         is_verified=True
     )
@@ -98,26 +86,18 @@ async def test_user(db_session: AsyncSession) -> User:
     return user
 
 
-@pytest.fixture(scope="function")
+@pytest_asyncio.fixture(scope="function")
 async def admin_user(db_session: AsyncSession) -> User:
     """Create an admin user for admin tests."""
-    # Create admin role
-    role = Role(
-        name="admin",
-        description="Administrator role",
-        permissions=["*"]  # All permissions
-    )
-    db_session.add(role)
-    await db_session.commit()
-    await db_session.refresh(role)
     
     # Create admin user
     user = User(
-        username="admin",
         email="admin@example.com",
         password_hash=get_password_hash("adminpassword123"),
-        full_name="Admin User",
-        phone_number="+1234567890",
+        first_name="Admin",
+        last_name="User",
+        phone="+1234567890",
+        role=UserRole.SUPER_ADMIN,
         is_active=True,
         is_verified=True
     )
@@ -128,23 +108,25 @@ async def admin_user(db_session: AsyncSession) -> User:
     return user
 
 
-@pytest.fixture(scope="function")
-def test_token(test_user: User) -> str:
+@pytest_asyncio.fixture(scope="function")
+async def test_token(test_user: User) -> str:
     """Create a test JWT token for authentication."""
     return create_access_token(
-        data={"sub": test_user.username, "user_id": str(test_user.id)}
+        subject=str(test_user.id),
+        data={"email": test_user.email, "role": "doctor"}
     )
 
 
-@pytest.fixture(scope="function")
-def admin_token(admin_user: User) -> str:
+@pytest_asyncio.fixture(scope="function")
+async def admin_token(admin_user: User) -> str:
     """Create an admin JWT token for admin authentication."""
     return create_access_token(
-        data={"sub": admin_user.username, "user_id": str(admin_user.id)}
+        subject=str(admin_user.id),
+        data={"email": admin_user.email, "role": "super_admin"}
     )
 
 
-@pytest.fixture(scope="function")
+@pytest_asyncio.fixture(scope="function")
 async def authenticated_client(
     client: AsyncClient, 
     test_token: str
@@ -154,7 +136,7 @@ async def authenticated_client(
     yield client
 
 
-@pytest.fixture(scope="function")
+@pytest_asyncio.fixture(scope="function")
 async def admin_client(
     client: AsyncClient, 
     admin_token: str
@@ -263,7 +245,7 @@ def pytest_configure(config):
     )
 
 
-@pytest.fixture(autouse=True)
+@pytest_asyncio.fixture(autouse=True)
 async def cleanup_redis():
     """Clean up Redis before and after each test."""
     try:
@@ -274,7 +256,7 @@ async def cleanup_redis():
         pass  # Redis might not be available in test environment
 
 
-@pytest.fixture(scope="session")
+@pytest_asyncio.fixture(scope="session")
 async def setup_test_database():
     """Set up the test database before running tests."""
     try:
