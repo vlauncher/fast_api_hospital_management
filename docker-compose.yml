@@ -28,7 +28,7 @@ services:
   redis:
     image: redis:7-alpine
     container_name: hospital_redis
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis123}
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-change-this-redis-password}
     volumes:
       - redis_data:/data
     ports:
@@ -51,8 +51,8 @@ services:
     container_name: hospital_api
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-hospital_management}
-      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis123}@redis:6379/0
-      - SECRET_KEY=${SECRET_KEY:-your-secret-key-here}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-change-this-redis-password}@redis:6379/0
+      - SECRET_KEY=${SECRET_KEY:-change-this-secret-key}
       - ENVIRONMENT=${ENVIRONMENT:-development}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
       - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:8080}
@@ -85,8 +85,8 @@ services:
     command: celery -A app.workers.celery_app worker --loglevel=info --concurrency=4
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-hospital_management}
-      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis123}@redis:6379/0
-      - SECRET_KEY=${SECRET_KEY:-your-secret-key-here}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-change-this-redis-password}@redis:6379/0
+      - SECRET_KEY=${SECRET_KEY:-change-this-secret-key}
       - ENVIRONMENT=${ENVIRONMENT:-development}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
     depends_on:
@@ -109,8 +109,8 @@ services:
     command: celery -A app.workers.celery_app beat --loglevel=info
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-hospital_management}
-      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis123}@redis:6379/0
-      - SECRET_KEY=${SECRET_KEY:-your-secret-key-here}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-change-this-redis-password}@redis:6379/0
+      - SECRET_KEY=${SECRET_KEY:-change-this-secret-key}
       - ENVIRONMENT=${ENVIRONMENT:-development}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
     depends_on:
@@ -133,8 +133,8 @@ services:
     command: celery -A app.workers.celery_app flower --port=5555
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-hospital_management}
-      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis123}@redis:6379/0
-      - SECRET_KEY=${SECRET_KEY:-your-secret-key-here}
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-change-this-redis-password}@redis:6379/0
+      - SECRET_KEY=${SECRET_KEY:-change-this-secret-key}
       - ENVIRONMENT=${ENVIRONMENT:-development}
       - LOG_LEVEL=${LOG_LEVEL:-INFO}
     ports:
@@ -194,7 +194,7 @@ services:
     container_name: hospital_grafana
     environment:
       - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-change-this-grafana-password}
       - GF_USERS_ALLOW_SIGN_UP=false
     ports:
       - "${GRAFANA_PORT:-3001}:3000"

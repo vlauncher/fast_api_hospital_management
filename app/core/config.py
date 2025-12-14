@@ -16,13 +16,13 @@ class Settings(BaseSettings):
     DATABASE_MAX_OVERFLOW: int = 10
     
     # Security
-    SECRET_KEY: str = "your-secret-key-here-change-in-production"
+    SECRET_KEY: str = ""  # Set in environment variable
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
     ALGORITHM: str = "HS256"
     
     # Encryption
-    ENCRYPTION_KEY: str = "your-encryption-key-here-change-in-production"
+    ENCRYPTION_KEY: str = ""  # Set in environment variable
     
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
