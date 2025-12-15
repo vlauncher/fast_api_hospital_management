@@ -15,6 +15,8 @@ from app.api.v1.auth.routes import router as auth_router
 from app.api.v1.patients.routes import router as patients_router
 from app.api.v1.appointments.routes import router as appointments_router
 from app.api.v1.emr.routes import router as emr_router
+from app.api.v1.pharmacy.routes import router as pharmacy_router
+from app.api.v1.lab.routes import router as lab_router
 from app.workers.celery_app import celery_app
 
 # Configure logging
@@ -124,6 +126,20 @@ app.include_router(
     emr_router,
     prefix="/api/v1/emr",
     tags=["EMR"]
+)
+
+
+app.include_router(
+    pharmacy_router,
+    prefix="/api/v1/pharmacy",
+    tags=["Pharmacy"]
+)
+
+
+app.include_router(
+    lab_router,
+    prefix="/api/v1/lab",
+    tags=["Lab"]
 )
 
 

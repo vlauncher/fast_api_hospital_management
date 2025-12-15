@@ -47,6 +47,25 @@ def send_welcome_email(self, user_id: str, user_email: str, user_name: str):
         raise self.retry(exc=exc, countdown=countdown)
 
 
+@celery_app.task(bind=True, max_retries=3)
+def send_notification_task(self, recipient: str, subject: str, body: str, channel: str = "email"):
+    """Background task to send notifications via configured infra adapter."""
+    try:
+        logger.info(f"Queueing notification to {recipient} via {channel}")
+        # Import here to avoid circular imports at module import time
+        from app.infrastructure.notifications import send_notification
+
+        # If adapter is async, run in event loop; here adapter is async function
+        import asyncio
+        result = asyncio.get_event_loop().run_until_complete(send_notification(recipient, subject, body, channel))
+        logger.info(f"Notification send result: {result}")
+        return result
+    except Exception as exc:
+        logger.error(f"Failed to send notification to {recipient}: {exc}")
+        countdown = 2 ** self.request.retries
+        raise self.retry(exc=exc, countdown=countdown)
+
+
 @celery_app.task(bind=True)
 def send_password_reset_email(self, user_email: str, reset_token: str, user_name: str):
     """Send password reset email"""
