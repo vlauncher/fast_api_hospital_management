@@ -63,6 +63,11 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str | None = None
     GEMINI_MODEL: str = "gemini-pro"
 
+    # Cloudinary
+    CLOUDINARY_CLOUD_NAME: Optional[str] = None
+    CLOUDINARY_API_KEY: Optional[str] = None
+    CLOUDINARY_API_SECRET: Optional[str] = None
+
     model_config = SettingsConfigDict(case_sensitive=True, env_file=".env", extra='ignore')
 
 settings = Settings()
