@@ -17,6 +17,7 @@ from app.core import security
 from app.core.config import settings
 from app.core.redis_client import get_redis_client
 from app.services.email import send_otp_email
+from app.api import deps
 
 router = APIRouter()
 
@@ -211,4 +212,107 @@ async def resend_otp(
     return {
         "message": "A new OTP has been sent to your Gmail",
         "otp_expires_at": expires.isoformat()
+    }
+
+@router.post("/forgot-password", response_model=auth_schema.AuthResponse)
+async def forgot_password(
+    password_in: auth_schema.ForgotPassword,
+    db: AsyncSession = Depends(get_db),
+    redis: Redis = Depends(get_redis_client),
+) -> Any:
+    """
+    Password Reset Flow Step 1: Request OTP via email.
+    """
+    result = await db.execute(select(User).where(User.email == password_in.email))
+    user = result.scalars().first()
+
+    if not user:
+        # Don't reveal user existence
+        # Return success even if user doesn't exist
+        return {
+             "message": "If the email exists, an OTP has been sent to your Gmail",
+             "otp_expires_at": (datetime.utcnow() + timedelta(seconds=600)).isoformat()
+        }
+
+    otp = await generate_unique_otp(redis)
+    
+    redis_data = {
+        "purpose": "password_reset",
+        "user_id": str(user.id),
+        "email": user.email
+    }
+    
+    await redis.hset(f"otp:{otp}", mapping=redis_data)
+    await redis.expire(f"otp:{otp}", 600)
+    
+    await send_otp_email(user.email, otp)
+    
+    expires = datetime.utcnow() + timedelta(seconds=600)
+    return {
+        "message": "OTP sent to your Gmail",
+        "otp_expires_at": expires.isoformat()
+    }
+
+@router.post("/reset-password", response_model=auth_schema.AuthResponse)
+async def reset_password(
+    reset_in: auth_schema.ResetPassword,
+    db: AsyncSession = Depends(get_db),
+    redis: Redis = Depends(get_redis_client),
+) -> Any:
+    """
+    Password Reset Flow Step 2: Verify OTP and reset password.
+    """
+    key = f"otp:{reset_in.otp_code}"
+    data = await redis.hgetall(key)
+    
+    if not data:
+        raise HTTPException(status_code=400, detail="Invalid or expired OTP")
+        
+    if data.get("purpose") != "password_reset":
+        raise HTTPException(status_code=400, detail="Invalid OTP purpose")
+        
+    # Verify user_id matches
+    if data.get("user_id") != reset_in.user_id:
+        raise HTTPException(status_code=400, detail="Invalid request")
+        
+    result = await db.execute(select(User).where(User.id == reset_in.user_id))
+    user = result.scalars().first()
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    # Update password
+    hashed_password = security.get_password_hash(reset_in.new_password)
+    user.password_hash = hashed_password
+    db.add(user)
+    await db.commit()
+    
+    # Invalidate OTP
+    await redis.delete(key)
+    
+    return {
+        "message": "Password reset successfully",
+        "otp_expires_at": ""
+    }
+
+@router.post("/change-password", response_model=auth_schema.AuthResponse)
+async def change_password(
+    password_in: auth_schema.ChangePassword,
+    current_user: User = Depends(deps.get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+) -> Any:
+    """
+    Change password for logged in user.
+    """
+    if not security.verify_password(password_in.current_password, current_user.password_hash):
+        raise HTTPException(status_code=400, detail="Incorrect current password")
+        
+    hashed_password = security.get_password_hash(password_in.new_password)
+    current_user.password_hash = hashed_password
+    db.add(current_user)
+    await db.commit()
+    
+    return {
+        "message": "Password changed successfully",
+        "otp_expires_at": ""
     }
