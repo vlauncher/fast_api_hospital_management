@@ -8,6 +8,7 @@ from app.models.lab_test import LabTest, LabTestStatus
 from app.models.user import User, UserRole
 from app.models.patient import Patient
 from app.schemas import lab_test as lab_test_schema
+from app.services import ai_service
 
 router = APIRouter()
 
@@ -59,6 +60,12 @@ async def update_lab_test(
         raise HTTPException(status_code=404, detail="Lab test not found")
     
     update_data = test_in.model_dump(exclude_unset=True)
+    
+    # AI Interpretation
+    if "results" in update_data and update_data["results"]:
+        interpretation = await ai_service.interpret_lab_results(test.test_name, update_data["results"])
+        update_data["ai_interpretation"] = interpretation
+
     for field, value in update_data.items():
         setattr(test, field, value)
     

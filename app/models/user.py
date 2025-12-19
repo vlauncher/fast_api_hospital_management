@@ -24,5 +24,6 @@ class User(Base):
     role = Column(Enum(UserRole), default=UserRole.PATIENT, nullable=False)
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
+    tenant_id = Column(String(50), nullable=True, index=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

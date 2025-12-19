@@ -11,6 +11,12 @@ venv:
 run:
 	./venv/bin/uvicorn app.main:app --reload
 
+worker:
+	./venv/bin/celery -A app.core.celery_app worker --loglevel=info
+
+beat:
+	./venv/bin/celery -A app.core.celery_app beat --loglevel=info
+
 test:
 	./venv/bin/pytest
 

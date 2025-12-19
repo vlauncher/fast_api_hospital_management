@@ -9,6 +9,7 @@ from app.models.patient import Patient
 from app.models.doctor import Doctor
 from app.models.user import User, UserRole
 from app.schemas import appointment as appointment_schema
+from app.services import ai_service
 
 router = APIRouter()
 
@@ -34,10 +35,16 @@ async def create_appointment(
     if not doctor:
         raise HTTPException(status_code=404, detail="Doctor not found")
     
+    # AI Analysis
+    ai_analysis = {}
+    if appointment_in.symptoms:
+        ai_analysis = await ai_service.analyze_symptoms(appointment_in.symptoms)
+
     appointment = Appointment(
         **appointment_in.model_dump(),
         patient_id=patient.id,
-        status=AppointmentStatus.SCHEDULED
+        status=AppointmentStatus.SCHEDULED,
+        ai_preliminary_analysis=ai_analysis
     )
     
     # Simple check for virtual meeting link if is_virtual is true
