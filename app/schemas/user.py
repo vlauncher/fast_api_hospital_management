@@ -12,6 +12,7 @@ class UserBase(BaseModel):
     role: UserRole = UserRole.PATIENT
     is_active: Optional[bool] = True
     is_verified: Optional[bool] = False
+    tenant_id: Optional[str] = None
 
 class UserCreate(UserBase):
     password: str

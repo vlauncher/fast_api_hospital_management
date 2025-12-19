@@ -16,7 +16,7 @@ from app.models.user import User
 from app.core import security
 from app.core.config import settings
 from app.core.redis_client import get_redis_client
-from app.services.email import send_otp_email
+from app.tasks.email_tasks import send_otp_email_task
 from app.api import deps
 
 router = APIRouter()
@@ -60,7 +60,7 @@ async def register(
     await redis.expire(f"otp:{otp}", 600)
     
     # Send Email
-    await send_otp_email(user_in.email, otp)
+    send_otp_email_task.delay(user_in.email, otp)
     
     expires = datetime.utcnow() + timedelta(seconds=600)
     return {
@@ -99,7 +99,7 @@ async def login(
     await redis.hset(f"otp:{otp}", mapping=redis_data)
     await redis.expire(f"otp:{otp}", 600)
     
-    await send_otp_email(user.email, otp)
+    send_otp_email_task.delay(user.email, otp)
     
     expires = datetime.utcnow() + timedelta(seconds=600)
     return {
@@ -144,7 +144,8 @@ async def verify_otp(
             role=user_schema.UserRole(user_data.get("role")),
             is_active=True,
             is_verified=True,
-            password_hash=password_hash
+            password_hash=password_hash,
+            tenant_id=user_data.get("tenant_id")
         )
         db.add(user)
         await db.commit()
@@ -245,7 +246,7 @@ async def forgot_password(
     await redis.hset(f"otp:{otp}", mapping=redis_data)
     await redis.expire(f"otp:{otp}", 600)
     
-    await send_otp_email(user.email, otp)
+    send_otp_email_task.delay(user.email, otp)
     
     expires = datetime.utcnow() + timedelta(seconds=600)
     return {
