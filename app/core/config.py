@@ -68,6 +68,14 @@ class Settings(BaseSettings):
     CLOUDINARY_API_KEY: Optional[str] = None
     CLOUDINARY_API_SECRET: Optional[str] = None
 
+    # Email
+    SMTP_HOST: Optional[str] = None
+    SMTP_PORT: Optional[int] = 587
+    SMTP_USER: Optional[str] = None
+    SMTP_PASSWORD: Optional[str] = None
+    MAIL_FROM: Optional[str] = None
+    MAIL_FROM_NAME: str = "LifeLine Hospital"
+
     model_config = SettingsConfigDict(case_sensitive=True, env_file=".env", extra='ignore')
 
 settings = Settings()
